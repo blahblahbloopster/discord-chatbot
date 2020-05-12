@@ -1,0 +1,11 @@
+corpus/
+venv/
+brain
+brain-journal
+cobe.brain
+cobe.brain-journal
+cobe2
+cobe2-journal
+secrets.json
+__pycache__/
+.idea/
