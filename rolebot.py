@@ -24,7 +24,8 @@ async def on_raw_reaction_add(reaction):
         check = message.reactions
         for i in check:
             if i.emoji == "✅":  # There IS a char there, but my IDE doesn't display it.  It's
-                await reaction.member.add_roles(discord.utils.get(guild.roles, id=709873263525757060))
+                if len(reaction.member.roles) < 2:
+                    await reaction.member.add_roles(discord.utils.get(guild.roles, id=709873263525757060))
             else:
                 await message.remove_reaction(reaction.emoji, reaction.member)
 
