@@ -1,3 +1,5 @@
+import time
+
 import discord
 import pickle as pkl
 from pprint import pprint
@@ -43,8 +45,9 @@ async def on_message(message):
 
         if str(message.channel) == "bot":
             # print(message.content[22:])
-            await message.channel.send("<$$$709896631855874088> " + chatbot.brain.reply(content).replace("@", "!!").replace("<u>", "_").replace("</u>", "_").replace("$$$", "@"))
+            await message.channel.send(("<$$$709896631855874088> " + chatbot.brain.reply(content).replace("@", "!!").replace("<u>", "_").replace("</u>", "_")).replace("$$$", "@"))
             # await message.channel.send("(I'm in observation mode for the moment)")
+            time.sleep(1)
     else:
         chatbot.brain.learn(message.content)
 
