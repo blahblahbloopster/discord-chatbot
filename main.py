@@ -18,10 +18,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.author == client.user or message.channel == "unbelievaboat" or message.channel == "admin-corner-uwu":
-        # print(message.content)
-        # chatbot.brain.learn(message.content)
         return
-    # print(message.content)
     if secrets["chatbot"]["id"] in message.content or message.content[:4] == ":~$ ":
         content = message.content.replace(secrets["chatbot"]["id"], "").replace(":~$ ", "")
         # print(str(message.channel))
@@ -46,8 +43,8 @@ async def on_message(message):
 
         if str(message.channel) == "bot":
             # print(message.content[22:])
-            # await message.channel.send(chatbot.brain.reply(content).replace("@", "!!").replace("<u>", "_").replace("</u>", "_"))
-            await message.channel.send("(I'm in observation mode for the moment)")
+            await message.channel.send(chatbot.brain.reply(content).replace("@", "!!").replace("<u>", "_").replace("</u>", "_"))
+            # await message.channel.send("(I'm in observation mode for the moment)")
     else:
         chatbot.brain.learn(message.content)
 
