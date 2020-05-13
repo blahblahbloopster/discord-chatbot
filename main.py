@@ -22,7 +22,8 @@ async def on_message(message):
         # chatbot.brain.learn(message.content)
         return
     # print(message.content)
-    if secrets["chatbot"]["id"] in message.content:
+    if secrets["chatbot"]["id"] in message.content or message.content[:4] == ":~$ ":
+        content = message.content.replace(secrets["chatbot"]["id"], "").replace(":~$ ", "")
         # print(str(message.channel))
         # if str(message.channel) == "bot":
             # messages = list(map(lambda x: x.content + "\n", await message.channel.history(limit=200).flatten()))
@@ -45,7 +46,8 @@ async def on_message(message):
 
         if str(message.channel) == "bot":
             # print(message.content[22:])
-            await message.channel.send(chatbot.brain.reply(message.content[22:]).replace("@", "!!").replace("<u>", "_").replace("</u>", "_"))
+            # await message.channel.send(chatbot.brain.reply(content).replace("@", "!!").replace("<u>", "_").replace("</u>", "_"))
+            await message.channel.send("(I'm in observation mode for the moment)")
     else:
         chatbot.brain.learn(message.content)
 

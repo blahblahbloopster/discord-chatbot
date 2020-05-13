@@ -1,3 +1,5 @@
+from typing import List
+
 import discord
 import chatbot
 import json
@@ -16,7 +18,16 @@ async def on_ready():
 @client.event
 async def on_raw_reaction_add(reaction):
     if not reaction.message_id == 709827022800683038:
-        return
+        guild = client.get_guild(reaction.guild_id)
+        readme: discord.TextChannel = guild.get_channel(709580982688153621)
+        message: discord.Message = await readme.fetch_message(709897964771999816)
+        check = message.reactions
+        for i in check:
+            if i.emoji == "✅":  # There IS a char there, but my IDE doesn't display it.  It's
+                pass
+            else:
+                await message.remove_reaction(reaction.emoji, reaction.member)
+
     role: str = reaction.emoji.name
     roles = {"arch": 709562148342202368,
              "gentoo": 709599034486292482,
@@ -29,13 +40,29 @@ async def on_raw_reaction_add(reaction):
              "windoze": 709608463399125033,
              "vim": 709572199488684134,
              "emacs": 709572338009767977}
+    msg = await client.get_channel(709800728008327238).fetch_message(709827022800683038)
     if role not in roles.keys():
-        msg = await client.get_channel(709800728008327238).fetch_message(709827022800683038)
         await msg.remove_reaction(reaction.emoji, reaction.member)
         return
+
     guild = client.get_guild(reaction.guild_id)
-    role = discord.utils.get(guild.roles, id=roles[role])
-    await reaction.member.add_roles(role)
+
+    readme: discord.TextChannel = guild.get_channel(709580982688153621)
+    message: discord.Message = await readme.fetch_message(709897964771999816)
+    check = message.reactions
+    check_box = None
+    for i in check:
+        if i.emoji == "✅":  # There IS a char there, but my IDE doesn't display it.  It's
+            check_box = i
+    if not check_box:
+        return
+    users = await check_box.users().flatten()
+    if reaction.member.name in list(map(lambda x: x.name, users)):
+        role = discord.utils.get(guild.roles, id=roles[role])
+        await reaction.member.add_roles(role)
+    else:
+        await msg.remove_reaction(reaction.emoji, reaction.member)
+        await reaction.member.send("Please react with the checkbox in #readme")
 
 
 client.run(secrets["rolebot"]["token"])

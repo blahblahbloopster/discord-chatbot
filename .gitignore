@@ -9,3 +9,5 @@ cobe2-journal
 secrets.json
 __pycache__/
 .idea/
+cobe2.brain
+cobe2.brain-journal

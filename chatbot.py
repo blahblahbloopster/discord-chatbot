@@ -44,24 +44,25 @@ import re
 #     f.write("\n".join(filtered))
 #
 # exit()
-
-# with open("TOY STORY.txt") as f:
+#
+# with open("holy_grail.txt") as f:
 #     lines = f.read().splitlines()
 #
 # all_lines = []
 # current = ""
 #
 # for i in lines:
-#     if len(i) < len("            "):
+#     if len(i) < 1:
 #         continue
-#     if i[:12] == " " * 12 and not i[:25] == " " * 25:
-#         current += i[11:]
-#     if i[:25] == " " * 25:
+#     if i[:1] == "\t" and not i[:2] == "\t" * 2:
+#         # print(i)
+#         current += i[1:]
+#     if i[:2] == "\t" * 2:
 #         all_lines.append(current)
 #         current = ""
-#
+# #
 # # print(all_lines[:10])
-# with open("toy_story_lines.txt", "wt") as f:
+# with open("holy_grail_lines.txt", "wt") as f:
 #     f.write("\n".join(all_lines))
 # exit()
 
@@ -78,7 +79,7 @@ import re
 # with open("movie_lines3.txt", "wt") as f:
 #     f.write("\n".join(lines))
 
-brain = brain.Brain("cobe.brain")
+brain = brain.Brain("cobe2.brain")
 
 # for i in lines:
 #     brain.learn(i)
