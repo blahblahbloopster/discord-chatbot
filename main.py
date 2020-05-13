@@ -17,7 +17,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author == client.user or message.channel == "unbelievaboat":
+    if message.author == client.user or message.channel == "unbelievaboat" or message.channel == "admin-corner-uwu":
         # print(message.content)
         # chatbot.brain.learn(message.content)
         return
