@@ -73,10 +73,10 @@ async def unban(ctx, *, member):
 ####################################################
 
 @client.command()
-async def level(ctx, member):
+async def level(ctx, message):
     with open('users.json', 'r') as f:
         users = json.load(f)
-    level = users[str(member.id)]['level']
+    level = users[str(message.author.id)]['level']
     await ctx.send(f'You are level {level}')
 
 
