@@ -138,8 +138,9 @@ async def level_up(users, user):
             remove = [role1, role2, role3, role4]
             await user.add(role5)
             await user.remove(remove)
+# END OF LEVELING SYSTEM
 
-
+# Start of Evil Hacker's Code
 @client.event
 async def on_raw_reaction_add(reaction):
     if not reaction.message_id == 709827022800683038:
