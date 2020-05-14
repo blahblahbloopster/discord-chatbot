@@ -122,7 +122,8 @@ async def level_up(users, user: discord.member.Member):
         role5 = 709880891341799505
 
         channel = client.get_channel(710264223523012648)
-        await channel.send('{} has reached level {}'.format(user.mention, lvl_end))
+        if users[str(user.id)]["level"] != 4:
+            await channel.send('{} has reached level {}'.format(user.mention, lvl_end))
 
         users[str(user.id)]['level'] = lvl_end
         if lvl_end == 5:
@@ -140,6 +141,7 @@ async def level_up(users, user: discord.member.Member):
             remove = [role1, role2, role3, role4]
             await user.add(role5)
             await user.remove(remove)
+        # print(type(users[str(user.id)]["level"]))
 # END OF LEVELING SYSTEM
 
 # Start of Evil Hacker's Code
