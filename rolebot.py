@@ -1,9 +1,11 @@
 from typing import List
-
 import discord
 import chatbot
 import json
 from discord.ext import commands
+
+# Contains tokens and stuff
+from reddit import grab_good_post
 
 with open("secrets.json") as f:
     secrets = json.loads(f.read())
@@ -106,7 +108,7 @@ async def add_experience(users, user, exp):
     users[str(user.id)]['experience'] += exp
 
 
-async def level_up(users, user):
+async def level_up(users, user: discord.member.Member):
     experience = users[str(user.id)]['experience']
     lvl_start = users[str(user.id)]['level']
     lvl_end = int(experience ** (1/4))
@@ -134,13 +136,22 @@ async def level_up(users, user):
             remove = [role1, role2, role3]
             await user.add(role4)
             await user.remove_roles(remove)
-        elif lvl_end == 20:
+        elif lvl_end == 20 and role5 not in user.roles:
             remove = [role1, role2, role3, role4]
             await user.add(role5)
             await user.remove(remove)
 # END OF LEVELING SYSTEM
 
 # Start of Evil Hacker's Code
+
+
+@client.command(hidden=True)
+@commands.has_role(709561120070959205)
+async def reddit(ctx, subreddit):
+    post = grab_good_post(subreddit)
+    await ctx.send(post[0] + " | " + post[1])
+
+
 @client.event
 async def on_raw_reaction_add(reaction):
     if not reaction.message_id == 709827022800683038:
