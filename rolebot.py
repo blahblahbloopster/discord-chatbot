@@ -72,6 +72,14 @@ async def unban(ctx, *, member):
 #                LEVELING SYSTEM                   #
 ####################################################
 
+@client.command()
+async def level(ctx, member):
+    with open('users.json', 'r') as f:
+        users = json.load(f)
+    level = users[str(member.id)]['level']
+    await ctx.send(f'You are level {level}')
+
+
 @client.event
 async def on_member_join(member):
     with open('users.json', 'r') as f:
@@ -146,7 +154,6 @@ async def level_up(users, user: discord.member.Member):
 # END OF LEVELING SYSTEM
 
 # Start of Evil Hacker's Code
-
 
 @client.command()
 async def reddit(ctx, subreddit):
