@@ -136,7 +136,7 @@ async def level_up(users, user: discord.member.Member):
             remove = [role1, role2, role3]
             await user.add(role4)
             await user.remove_roles(remove)
-        elif lvl_end == 20 and role5 not in user.roles:
+        elif lvl_end == 20 and role5 not in list(map(lambda x: x.id, user.roles)):
             remove = [role1, role2, role3, role4]
             await user.add(role5)
             await user.remove(remove)
