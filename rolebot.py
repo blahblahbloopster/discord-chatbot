@@ -71,14 +71,6 @@ async def unban(ctx, *, member):
 #                LEVELING SYSTEM                   #
 ####################################################
 
-@client.command()
-async def level(ctx, message):
-    with open('users.json', 'r') as f:
-        users = json.load(f)
-    level = users[str(message.author.id)]['level']
-    await ctx.send(f'You are level {level}')
-
-
 @client.event
 async def on_member_join(member):
     with open('users.json', 'r') as f:
