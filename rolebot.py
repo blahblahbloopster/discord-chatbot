@@ -6,6 +6,7 @@ from discord.ext import commands
 
 # Contains tokens and stuff
 from reddit import grab_good_post
+from xkcd import get_url, get_random_url
 
 with open("secrets.json") as f:
     secrets = json.loads(f.read())
@@ -152,6 +153,19 @@ async def level_up(users, user: discord.member.Member):
 async def reddit(ctx, subreddit):
     post = grab_good_post(subreddit)
     await ctx.send(post[0] + " | " + post[1])
+
+
+@client.command()
+@commands.has_role(709561120070959205)
+async def xkcd(ctx, number=None):
+    try:
+        if number is not None:
+            int(number)
+    except:
+        await ctx.send("Please give a vailid number")
+        return
+    post = get_url(number) if number else get_random_url()
+    await ctx.send(post)
 
 
 @client.event
