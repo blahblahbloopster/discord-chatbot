@@ -200,7 +200,8 @@ async def on_raw_reaction_add(reaction):
              "ubuntu": 709568934600507553,
              "windoze": 709608463399125033,
              "vim": 709572199488684134,
-             "emacs": 709572338009767977}
+             "emacs": 709572338009767977,
+             "nano": 710984955299233793}
     msg = await client.get_channel(709800728008327238).fetch_message(709827022800683038)
     if role not in roles.keys():
         await msg.remove_reaction(reaction.emoji, reaction.member)
