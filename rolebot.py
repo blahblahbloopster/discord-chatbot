@@ -1,6 +1,8 @@
 import discord
 import json
 from discord.ext import commands
+
+from image import make_image
 from reddit import grab_good_post
 from xkcd import get_url, get_random_url
 
@@ -114,7 +116,14 @@ async def level(ctx):
     user = ctx.message.author
     level = users[str(user.id)]["level"]
     xp = users[str(user.id)]["experience"]
-    await ctx.send(f'```You are level {level} \nXP: {xp}```')
+
+    end_xp = (level + 1) ** 4
+    start_xp = level ** 4
+
+    img = make_image(user, level, xp, start_xp, end_xp)
+    img.save("img.png", "PNG")
+    await ctx.send(file=discord.File("img.png"))
+    # await ctx.send(f'```You are level {level} \nXP: {xp}```')
 
 
 @client.event

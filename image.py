@@ -4,17 +4,10 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import discord
 
-# img = Image.new("RGB", (1920, 720))
-
-# draw = ImageDraw.Draw(img)
-
-# draw.text((10, 10), "foo")
-# draw.ellipse((100, 310, 150, 360))
-
 
 def draw(percentage, color=(255, 0, 0)):
     im2 = Image.open("mask.png")
-    im3 = Image.new("RGBA", (1920, 480), color=(20, 20, 20))
+    im3 = Image.new("RGBA", (1920, 240), color=(20, 20, 20))
     draw2 = ImageDraw.Draw(im3)
     total_distance = 1920 - 50
     total_distance *= percentage / 100
