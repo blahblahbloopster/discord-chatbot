@@ -122,6 +122,7 @@ async def level_up(users, user: discord.member.Member):
     experience = users[str(user.id)]['experience']
     lvl_start = users[str(user.id)]['level']
     lvl_end = int(experience ** (1/4))
+    print(lvl_start, lvl_end)
 
     if lvl_end > lvl_start:
 
@@ -135,23 +136,33 @@ async def level_up(users, user: discord.member.Member):
         if users[str(user.id)]["level"] != 4:
             await channel.send('{} has reached level {}'.format(user.mention, lvl_end))
 
+        guild = client.get_guild(709560490199744593)
+
+        def get_role(role_id): return discord.utils.get(guild.roles, id=role_id)
+
         users[str(user.id)]['level'] = lvl_end
         if lvl_end == 5:
-            await user.add_roles(role2)
-            await user.remove_roles(role1)
+            print("aa")
+            await user.add_roles(get_role(role2))
+            await user.remove_roles(get_role(role1))
         elif lvl_end == 10:
-            remove = [role1, role2]
-            await user.add_roles(role3)
+            print("bb")
+            remove = [get_role(role1), get_role(role2)]
+            await user.add_roles(get_role(role3))
             await user.remove_roles(remove)
         elif lvl_end == 15:
-            remove = [role1, role2, role3]
-            await user.add(role4)
+            print("cc")
+            remove = [get_role(role1), get_role(role2), get_role(role3)]
+            await user.add(get_role(role4))
             await user.remove_roles(remove)
         elif lvl_end == 20 and users[str(user.id)]["level"] != 4:
-            remove = [role1, role2, role3, role4]
-            await user.add(role5)
+            print("dd")
+            remove = [get_role(role1), get_role(role2), get_role(role3), get_role(role4)]
+            await user.add(get_role(role5))
             await user.remove(remove)
         # print(type(users[str(user.id)]["level"]))
+
+
 # END OF LEVELING SYSTEM
 
 # Start of Evil Hacker's Code
