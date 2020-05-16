@@ -2,50 +2,39 @@ import numpy as np
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+import discord
 
-img = Image.new("RGB", (1920, 720))
+# img = Image.new("RGB", (1920, 720))
 
-draw = ImageDraw.Draw(img)
+# draw = ImageDraw.Draw(img)
 
 # draw.text((10, 10), "foo")
 # draw.ellipse((100, 310, 150, 360))
 
 
-class Bar:
-
-    def __init__(self, pos, length, height, color):
-        self.pos = pos
-        self.length = length - height
-        self.height = height
-        self.color = color
-
-    def draw(self, percentage, draw_object: ImageDraw.Draw):
-        draw_object.arc((*self.pos, self.pos[0] + self.height, self.pos[1] + self.height), 90, -90)
-        draw_object.arc((self.pos[0] + self.length,
-                         self.pos[1], self.pos[0] + self.length + self.height, self.pos[1] + self.height), -90, 90)
-        draw_object.line((self.pos[0] + self.height / 2, self.pos[1], self.pos[0] + self.length + self.height / 2, self.pos[1]))
-        draw_object.line((self.pos[0] + self.height / 2, self.pos[1] + self.height, self.pos[0] + self.length + self.height / 2, self.pos[1] + self.height))
-        draw_object.rectangle((self.pos[0], self.pos[1] + 1, self.pos[0] + ((self.length + self.height) * (percentage / 100)), self.pos[1] + self.height - 1), fill=(255, 0, 0))
-        draw_object.arc((*self.pos, self.pos[0] + self.height, self.pos[1] + self.height), 90, -90)
-        draw_object.arc((self.pos[0] + self.length,
-                         self.pos[1], self.pos[0] + self.length + self.height, self.pos[1] + self.height), -90, 90)
-        # draw_object.arc((self.pos[0] - 20, self.pos[1] - 10, self.pos[0] + 20, self.pos[1] + self.height + 10), 90, -90, width=20)
-
-        img2 = Image.new("RGB", (self.height // 2, self.height), color=(255, 255, 255))
-        draw2 = ImageDraw.Draw(img2)
-        draw2.ellipse((0, 0, self.height, self.height), width=2000, fill=(0, 0, 0))
-        img2.show()
-        # data = np.array(img2)  # "data" is a height x width x 4 numpy array
-        # red, green, blue, alpha = data.T  # Temporarily unpack the bands for readability
-        #
-        # # Replace white with red... (leaves alpha values alone...)
-        # white_areas = (red == 255) & (blue == 255) & (green == 255)
-        # data[..., :-1][white_areas.T] = (0, 0, 0, 0)  # Transpose back needed
-        #
-        # im2 = Image.fromarray(data)
-        # im2.show()
+def draw(percentage, color=(255, 0, 0)):
+    im2 = Image.open("mask.png")
+    im3 = Image.new("RGBA", (1920, 480), color=(20, 20, 20))
+    draw2 = ImageDraw.Draw(im3)
+    total_distance = 1920 - 50
+    total_distance *= percentage / 100
+    draw2.rectangle((25, 75, total_distance + 25, 125), fill=color)
+    im3.alpha_composite(im2)
+    return im3
 
 
-Bar((100, 100), 500, 30, (255, 0, 0)).draw(100, draw)
+def make_image(username: discord.Member, level: int, xp: int, lvl_start_xp: int, lvl_end_xp: int):
+    color = username.top_role.color.to_rgb()
+    img = draw(((xp - lvl_start_xp) / (lvl_end_xp - lvl_start_xp)) * 100, color=color)
+    draw2 = ImageDraw.Draw(img)
+    font = ImageFont.truetype("Roboto-Regular.ttf", size=50)
+    draw2.text((20, 0),
+               f"{username.display_name if type(username) is discord.Member else username}  |  {xp} / {lvl_end_xp} XP",
+               font=font)
+    draw2.text((20, 150), f"Level {level}", font=font)
+    draw2.text((1920 - 200, 150), f"Level {level + 1}", font=font)
+    # img.show()
+    return img
 
-# img.show()
+
+# make_image("evil_hacker", 4, 400, 300, 500)
