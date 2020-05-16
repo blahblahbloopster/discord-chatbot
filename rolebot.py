@@ -122,7 +122,6 @@ async def level_up(users, user: discord.member.Member):
     experience = users[str(user.id)]['experience']
     lvl_start = users[str(user.id)]['level']
     lvl_end = int(experience ** (1/4))
-    print(lvl_start, lvl_end)
 
     if lvl_end > lvl_start:
 
@@ -133,7 +132,11 @@ async def level_up(users, user: discord.member.Member):
         role5 = 709880891341799505
 
         channel = client.get_channel(710264223523012648)
-        if users[str(user.id)]["level"] != 4:
+        # if users[str(user.id)]["level"] != :
+        if lvl_end in (5, 10, 15, 20):
+            await channel.send("Congratulations {} for reaching level {} and gaining perks!"
+                               .format(user.mention, lvl_end))
+        else:
             await channel.send('{} has reached level {}'.format(user.mention, lvl_end))
 
         guild = client.get_guild(709560490199744593)
@@ -142,21 +145,17 @@ async def level_up(users, user: discord.member.Member):
 
         users[str(user.id)]['level'] = lvl_end
         if lvl_end == 5:
-            print("aa")
             await user.add_roles(get_role(role2))
             await user.remove_roles(get_role(role1))
         elif lvl_end == 10:
-            print("bb")
             remove = [get_role(role1), get_role(role2)]
             await user.add_roles(get_role(role3))
             await user.remove_roles(remove)
         elif lvl_end == 15:
-            print("cc")
             remove = [get_role(role1), get_role(role2), get_role(role3)]
             await user.add(get_role(role4))
             await user.remove_roles(remove)
         elif lvl_end == 20 and users[str(user.id)]["level"] != 4:
-            print("dd")
             remove = [get_role(role1), get_role(role2), get_role(role3), get_role(role4)]
             await user.add(get_role(role5))
             await user.remove(remove)
