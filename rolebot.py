@@ -78,7 +78,8 @@ async def level(ctx):
         users = json.load(f)
     user = ctx.message.author
     level = users[str(user.id)]["level"]
-    await ctx.send(f'```You are level {level}```')
+    xp = users[str(user.id)]["experience"]
+    await ctx.send(f'```You are level {level} /n XP: {xp}```')
 
 
 @client.event
