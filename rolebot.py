@@ -40,9 +40,9 @@ distro_role_ids = {"arch": 709562148342202368,
 
 
 def get_guild(inp) -> discord.Guild:
-    if type(inp) is commands.Context:
+    if type(inp) in (commands.Context, discord.message.Message):
         return inp.guild
-    if type(inp) is discord.Reaction:  # More to be added!
+    if type(inp) in (discord.RawReactionActionEvent,):  # More to be added!
         return client.get_guild(inp.guild_id)
     raise TypeError(f"get_guild is not (yet) implemented for {type(inp)}")
 
@@ -175,7 +175,7 @@ async def level_up(users, user: discord.member.Member, message: discord.Message)
         users[str(user.id)]['level'] = lvl_end
         if lvl_end in (5, 10, 15, 20):
             remove = converted[:lvl_end // 5]
-            await user.remove_roles(remove)
+            await user.remove_roles(*remove)
             await user.add_roles(converted[lvl_end // 5])
 
 
