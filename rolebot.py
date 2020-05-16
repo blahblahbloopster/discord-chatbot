@@ -174,7 +174,6 @@ async def reddit(ctx, subreddit):
 
 
 @client.command()
-@commands.has_role(709561120070959205)
 async def xkcd(ctx, number=None):
     try:
         if number is not None:
