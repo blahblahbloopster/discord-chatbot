@@ -1,3 +1,5 @@
+import re
+
 import discord
 import json
 from discord.ext import commands
@@ -64,7 +66,7 @@ async def on_command_error(ctx, error):
 
 
 # Moderation commands.
-@client.command()
+@client.command(help="Returns bot ping")
 async def ping(ctx):
     await ctx.send(f'```Bot Latency: {round(client.latency * 1000)}ms```')
 
@@ -108,7 +110,7 @@ async def unban(ctx, *, member):
 #                LEVELING SYSTEM                   #
 ####################################################
 
-@client.command()
+@client.command(help="Tells you your level")
 async def level(ctx):
     """Command to get level"""
     with open('users.json', 'r') as f:
@@ -193,7 +195,7 @@ async def level_up(users, user: discord.member.Member, message: discord.Message)
 
 # Start of Evil Hacker's Code
 
-@client.command()
+@client.command(help="Grabs a random image/video from the specified subreddit")
 async def reddit(ctx, subreddit):
     """Grabs one of the top media-containing posts from the specified subreddit"""
     post = grab_good_post(subreddit)
@@ -203,13 +205,16 @@ async def reddit(ctx, subreddit):
         await ctx.send(post[0] + " | " + post[1])
 
 
-@client.command()
+@client.command(help="Grabs an XKCD comic, random if no number is supplied")
 async def xkcd(ctx, number=None):
     """Grabs an XKCD comic, random if no number is supplied"""
-    try:
-        if number is not None:
-            int(number)
-    except:
+    valid = True
+    if number:
+        valid = False
+        if re.fullmatch("^[0|1|2|3|4|5|6|7|8|9]+$", number):
+            if 0 < len(number) < 5:
+                valid = True
+    if not valid:
         await ctx.send("Please give a vailid number")
         return
     post = get_url(number) if number else get_random_url()
