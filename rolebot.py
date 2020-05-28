@@ -110,7 +110,8 @@ async def unban(ctx, *, member):
 
 # Quickly thrown together. Error testing required
 @client.command(help="Request a link to a page on the Arch Wiki")
-async def arch(ctx, page):
+async def arch(ctx, *, page):
+    page.replace(" ", "_")
     url = ArchGet(page)
     await ctx.send(url)
 
