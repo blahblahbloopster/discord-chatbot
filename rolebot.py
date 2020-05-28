@@ -7,6 +7,7 @@ import io
 from image import make_image
 from reddit import grab_good_post
 from xkcd import get_url, get_random_url
+from arch import ArchGet
 
 # Contains tokens and stuff
 with open("secrets.json") as f:
@@ -105,6 +106,13 @@ async def unban(ctx, *, member):
             await ctx.send(f'```Unbanned {user.name}#{user.discriminator}```')
             return
 
+# Other commands
+
+# Quickly thrown together. Error testing required
+@client.command(help="Request a link to a page on the Arch Wiki")
+async def arch(ctx, page):
+    url = ArchGet(page)
+    await ctx.send(url)
 
 ####################################################
 #                LEVELING SYSTEM                   #
