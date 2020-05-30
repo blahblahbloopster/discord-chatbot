@@ -281,6 +281,16 @@ async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
                     embed.set_image(url=eligible_files[0].url)
                 await hall_of_fame.send(f"`{message.author}` | `{message.created_at.strftime('%c')}` | `{message.id}`\n"
                                         f"{content}", embed=embed)
+                with open('users.json', 'r') as f:
+                    users = json.load(f)
+
+                await update_data(users, message.author)
+                await add_experience(users, message.author, 500)
+                await level_up(users, message.author, message)
+
+                with open('users.json', 'w') as f:
+                    json.dump(users, f)
+
     readme: discord.TextChannel = guild.get_channel(readme_channel_id)
     readme_message: discord.Message = await readme.fetch_message(readme_post_id)
     if not reaction.message_id == roles_post_id:
