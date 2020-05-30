@@ -43,6 +43,8 @@ distro_role_ids = {"arch": 709562148342202368,
                    "emacs": 709572338009767977,
                    "nano": 710984955299233793}
 
+hall_of_fame_id = 716131138468446348
+
 
 def get_guild(inp) -> discord.Guild:
     if type(inp) in (commands.Context, discord.message.Message):
@@ -224,10 +226,30 @@ async def xkcd(ctx, number=None):
             if 0 < len(number) < 5:
                 valid = True
     if not valid:
-        await ctx.send("Please give a vailid number")
+        await ctx.send("Please give a valid number")
         return
     post = get_url(number) if number else get_random_url()
     await ctx.send(post)
+
+
+@client.command(help="Sets the number of/ reactions to go to "
+                     "hall of fame")
+@commands.has_any_role(*admin)
+async def set_threshold(ctx: commands.Context, number):
+    valid = False
+    if re.fullmatch("^[0|1|2|3|4|5|6|7|8|9]+$", number):
+        if 0 < len(number) < 5:
+            valid = True
+    if not valid:
+        await ctx.send("Please give a valid number")
+        return
+
+    with open("settings.json", "r") as f:
+        current = json.load(f)
+    current["hall_of_fame_threshold"] = int(number)
+    with open("settings.json", "w") as f:
+        json.dump(current, f)
+    await ctx.send("Threshold successfully set (will not affect old messages)")
 
 
 @client.event
@@ -239,7 +261,24 @@ async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
             num = list(filter(lambda x: x.emoji.name == "linuxPowered", message.reactions))[0].count
             threshold = json.loads(open("settings.json").read())["hall_of_fame_threshold"]
             if num == threshold:
-                print(message.content)
+                hall_of_fame: discord.TextChannel = guild.get_channel(hall_of_fame_id)
+                messages = await hall_of_fame.history(limit=200).flatten()
+                for m in messages:
+                    if str(message.id) in m.content:
+                        # Return if it is a repost
+                        return
+                content = (">>> " + message.content) if len(message.content) > 0 else ""
+                files = message.attachments
+
+                def check(file):
+                    return re.fullmatch("\\w+\\.(jpg|png|gif|jpeg)$", file.filename)
+                embed = None
+                eligible_files = list(filter(check, files))
+                if len(eligible_files) > 0:
+                    embed = discord.Embed()
+                    embed.set_image(url=eligible_files[0].url)
+                await hall_of_fame.send(f"`{message.author}` | `{message.created_at.strftime('%c')}` | `{message.id}`\n"
+                                        f"{content}", embed=embed)
     readme: discord.TextChannel = guild.get_channel(readme_channel_id)
     readme_message: discord.Message = await readme.fetch_message(readme_post_id)
     if not reaction.message_id == roles_post_id:
@@ -273,4 +312,5 @@ async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
         await reaction.member.send("Please react with the checkbox in #readme")
 
 
-client.run(secrets["rolebot"]["token"])
+if __name__ == '__main__':
+    client.run(secrets["rolebot"]["token"])
