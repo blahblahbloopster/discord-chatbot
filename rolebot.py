@@ -231,8 +231,15 @@ async def xkcd(ctx, number=None):
 
 
 @client.event
-async def on_raw_reaction_add(reaction):
+async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
     guild = get_guild(reaction)
+    if reaction.channel_id not in (709561915206008962,):
+        if reaction.emoji.name == "linuxPowered":
+            message: discord.Message = await guild.get_channel(reaction.channel_id).fetch_message(reaction.message_id)
+            num = list(filter(lambda x: x.emoji.name == "linuxPowered", message.reactions))[0].count
+            threshold = json.loads(open("settings.json").read())["hall_of_fame_threshold"]
+            if num == threshold:
+                print(message.content)
     readme: discord.TextChannel = guild.get_channel(readme_channel_id)
     readme_message: discord.Message = await readme.fetch_message(readme_post_id)
     if not reaction.message_id == roles_post_id:
