@@ -108,6 +108,7 @@ async def unban(ctx, *, member):
 
 # Other commands
 
+
 # Quickly thrown together. Error testing required
 @client.command(help="Request a link to a page on the Arch Wiki")
 async def arch(ctx, *, page):
@@ -118,6 +119,7 @@ async def arch(ctx, *, page):
 ####################################################
 #                LEVELING SYSTEM                   #
 ####################################################
+
 
 @client.command(help="Tells you your level")
 async def level(ctx):
@@ -243,6 +245,7 @@ async def on_raw_reaction_add(reaction):
                     await reaction.member.add_roles(discord.utils.get(guild.roles, id=starter_role_id))
             else:
                 await readme_message.remove_reaction(reaction.emoji, reaction.member)
+        return
 
     role: str = reaction.emoji.name
     msg = await client.get_channel(roles_channel_id).fetch_message(roles_post_id)
