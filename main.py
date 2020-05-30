@@ -57,7 +57,7 @@ async def on_message(message):
 
         if str(message.channel) == "bot":
             # print(message.content[22:])
-            await message.channel.send((prefix + chatbot.learn_and_reply(content).replace("@", "!!").replace("<u>", "_").replace("</u>", "_")).replace("$$$", "@"), tts=True)
+            await message.channel.send((prefix + chatbot.learn_and_reply(content).replace("@", "!!").replace("<u>", "_").replace("</u>", "_")).replace("$$$", "@"))
             # await message.channel.send("(I'm in observation mode for the moment)")
             time.sleep(1)
     else:
