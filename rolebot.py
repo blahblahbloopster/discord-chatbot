@@ -1,5 +1,5 @@
 import re
-
+import duckduckgo
 import discord
 import json
 from discord.ext import commands
@@ -109,6 +109,13 @@ async def unban(ctx, *, member):
             return
 
 # Other commands
+
+
+# DuckDuckGo
+@client.command(help="Search the internet with DuckDuckGo")
+async def ddg(ctx, *, search):
+    search = duckduckgo.get_zci(search)
+    await ctx.send(f'```{search}```')
 
 
 # Quickly thrown together. Error testing required
