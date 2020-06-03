@@ -131,11 +131,14 @@ async def arch(ctx, *, page):
 
 
 @client.command(help="Tells you your level")
-async def level(ctx):
-    """Command to get level"""
+async def level(ctx, member: discord.Member=None):
+    # Command to get level
     with open('users.json', 'r') as f:
         users = json.load(f)
-    user = ctx.message.author
+    if member:
+        user = member
+    else:
+        user = ctx.message.author
     level = users[str(user.id)]["level"]
     xp = users[str(user.id)]["experience"]
 
