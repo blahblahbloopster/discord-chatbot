@@ -241,8 +241,7 @@ async def xkcd(ctx, number=None):
     await ctx.send(post)
 
 
-@client.command(help="Sets the number of/ reactions to go to "
-                     "hall of fame")
+@client.command(hidden=True)
 @commands.has_any_role(*admin)
 async def set_threshold(ctx: commands.Context, number):
     valid = False
