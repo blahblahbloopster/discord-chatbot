@@ -73,6 +73,21 @@ async def on_command_error(ctx, error):
 async def ping(ctx):
     await ctx.send(f'```Bot Latency: {round(client.latency * 1000)}ms```')
 
+@client.command(hidden=True)
+@commands.has_any_role(*admin)
+async def award(ctx, member: discord.Member, xp=50, message: discord.Message):
+    with open('users.json', 'r') as f:
+        users = json.load(f)
+
+    await update_data(users, member)
+    await add_experience(users, member, xp)
+    await level_up(users, member, message)
+
+    with open('users.json', 'w') as f:
+        json.dump(users, f)
+
+    await ctx.send(f'```Awarded {xp}xp to {member.name}```')
+
 
 @client.command(hidden=True)
 @commands.has_any_role(*admin)
@@ -110,7 +125,6 @@ async def unban(ctx, *, member):
 
 # Other commands
 
-
 # DuckDuckGo
 @client.command(help="Search the internet with DuckDuckGo")
 async def ddg(ctx, *, search):
@@ -119,6 +133,7 @@ async def ddg(ctx, *, search):
 
 
 # Quickly thrown together. Error testing required
+# I hate this. I wish this were dead. Everything about this sucks and is terrible and is broken and AAAAAAAAAAA!!!!
 @client.command(help="Request a link to a page on the Arch Wiki")
 async def arch(ctx, *, page):
     page.replace(" ", "_")
