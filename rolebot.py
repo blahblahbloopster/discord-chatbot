@@ -168,7 +168,7 @@ async def on_message(message):
         users = json.load(f)
 
     await update_data(users, message.author)
-    await add_experience(users, message.author, 15)
+    await add_experience(users, message.author, 10)
     await level_up(users, message.author, message)
 
     with open('users.json', 'w') as f:
