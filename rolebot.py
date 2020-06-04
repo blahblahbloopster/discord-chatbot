@@ -81,23 +81,23 @@ async def award(ctx, member: discord.Member, xp=50):
 
     message = ctx.message
 
-    # This sucks, a lot
+    # I don't know why, but this refuses to work
     valid = False
     if re.fullmatch("^[0|1|2|3|4|5|6|7|8|9]+$", xp):
-        valid = True
+        if 0 < len(xp) < 5:
+            valid = True
     if not valid:
         await ctx.send("Please give a valid number")
         return
 
-    if valid:
-        await update_data(users, member)
-        await add_experience(users, member, xp)
-        await level_up(users, member, message)
+    await update_data(users, member)
+    await add_experience(users, member, xp)
+    await level_up(users, member, message)
 
-        with open('users.json', 'w') as f:
-            json.dump(users, f)
+    with open('users.json', 'w') as f:
+        json.dump(users, f)
 
-            await ctx.send(f'```Awarded {xp}xp to {member.name}```')
+    await ctx.send(f'```Awarded {xp}xp to {member.name}```')
 
 
 @client.command(hidden=True)
