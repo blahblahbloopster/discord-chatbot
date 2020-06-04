@@ -75,7 +75,7 @@ async def ping(ctx):
 
 @client.command(hidden=True)
 @commands.has_any_role(*admin)
-async def award(ctx, member: discord.Member, xp=50, message: discord.Message):
+async def award(ctx, member: discord.Member, message: discord.Message, xp=50):
     with open('users.json', 'r') as f:
         users = json.load(f)
 
