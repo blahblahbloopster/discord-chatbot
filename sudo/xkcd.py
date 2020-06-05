@@ -1,3 +1,4 @@
+# Simple functions that hide ugly urls from the main code.
 import requests
 
 
