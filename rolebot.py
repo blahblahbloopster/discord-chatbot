@@ -15,7 +15,7 @@ with open("secrets.json") as f:
 
 
 admin = (709561120070959205, )
-client = commands.Bot(command_prefix='!')
+client = commands.Bot(command_prefix='sudo ')
 
 role1 = 709873263525757060
 role2 = 709878333067755530
