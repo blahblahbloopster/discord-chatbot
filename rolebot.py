@@ -256,13 +256,10 @@ async def xkcd(ctx, number=None):
     """Grabs an XKCD comic, random if no number is supplied"""
     valid = True
     if number:
-        valid = False
-        if re.fullmatch("^[0|1|2|3|4|5|6|7|8|9]+$", number):
-            if 0 < len(number) < 5:
-                valid = True
-    if not valid:
-        await ctx.send("Please give a valid number")
-        return
+        valid = validate(number)
+        if not valid:
+            await ctx.send("Please give a valid number")
+            return
     post = get_url(number) if number else get_random_url()
     await ctx.send(post)
 
@@ -270,10 +267,7 @@ async def xkcd(ctx, number=None):
 @client.command(hidden=True)
 @commands.has_any_role(*admin)
 async def set_threshold(ctx: commands.Context, number):
-    valid = False
-    if re.fullmatch("^[0|1|2|3|4|5|6|7|8|9]+$", number):
-        if 0 < len(number) < 5:
-            valid = True
+    valid = validate(number)
     if not valid:
         await ctx.send("Please give a valid number")
         return
