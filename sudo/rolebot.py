@@ -91,7 +91,7 @@ async def ping(ctx):
 @client.command(hidden=True)
 @commands.has_any_role(*admin)
 async def award(ctx, member: discord.Member, xp: int = 50):
-    """Awards a specified user XP"""
+    # Awards a specified user XP
     users = leveling.load_users()
 
     message = ctx.message
@@ -114,7 +114,7 @@ async def award(ctx, member: discord.Member, xp: int = 50):
 @client.command(hidden=True)
 @commands.has_any_role(*admin)
 async def purge(ctx, amount=2):
-    """Removes messages from a channel"""
+    # Removes messages from a channel
     await ctx.channel.purge(limit=amount)
 
 
