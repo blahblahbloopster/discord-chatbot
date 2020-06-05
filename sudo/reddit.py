@@ -1,3 +1,4 @@
+# Big boi script to get reddit things. Read documentation for each function.
 import random
 import requests
 import re
@@ -5,19 +6,19 @@ import re
 
 # Subreddit is without the r/
 def grab_top_posts(subreddit: str):
-    """Grabs a list of top posts from a specified subreddit"""
+    # Grabs a list of top posts from a specified subreddit
     raw = requests.get("https://reddit.com/r/{}/top/.json?count=20".format(subreddit),
                        headers={'User-agent': 'your bot 0.1'})
     return raw.json()
 
 
 def get_data(post_json: dict):
-    """Grabs data about a post from the json blob"""
+    # Grabs data about a post from the json blob
     return post_json["data"]["title"], post_json["data"]
 
 
 def get_info_by_id(id_number: int, subreddit, data=None):
-    """Gets one post by id number from a subreddit"""
+    # Gets one post by id number from a subreddit
     if not data:
         data = grab_top_posts(subreddit)["data"]["children"][id_number]["data"]
     else:
@@ -32,7 +33,7 @@ def get_info_by_id(id_number: int, subreddit, data=None):
 
 
 def get_media_by_id(id_number: int, subreddit, data=None):
-    """Grabs any media attached to a post"""
+    # Grabs any media attached to a post
     if not data:
         data = grab_top_posts(subreddit)["data"]["children"][id_number]["data"]
     info = get_info_by_id(id_number, subreddit, data)
@@ -45,7 +46,7 @@ def get_media_by_id(id_number: int, subreddit, data=None):
 
 
 def grab_good_post(subreddit: str):
-    """Fetches a media-containing post from the specified subreddit"""
+    # Fetches a media-containing post from the specified subreddit
     d = grab_top_posts(subreddit)["data"]["children"]
     posts = []
     for i in range(len(d)):
