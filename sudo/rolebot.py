@@ -4,14 +4,16 @@ import discord
 import json
 from discord.ext import commands
 import io
-from image import make_image
-from reddit import grab_good_post
-from xkcd import get_url, get_random_url
-from arch import ArchGet
-from valid import validate
+
+from sudo import leveling
+from sudo.image import make_image
+from sudo.reddit import grab_good_post
+from sudo.xkcd import get_url, get_random_url
+from sudo.arch import arch_wiki_get
+from sudo.valid import validate_number
 
 # Contains tokens and stuff
-with open("secrets.json") as f:
+with open("../secrets.json") as f:
     secrets = json.loads(f.read())
 
 
@@ -48,10 +50,13 @@ hall_of_fame_id = 716131138468446348
 
 
 def get_guild(inp) -> discord.Guild:
+    """Utility function, gets a Guild object from a variety of different types"""
     if type(inp) in (commands.Context, discord.message.Message):
         return inp.guild
     if type(inp) in (discord.RawReactionActionEvent,):  # More to be added!
         return client.get_guild(inp.guild_id)
+    if type(inp) is int:
+        return client.get_guild(inp)
     raise TypeError(f"get_guild is not (yet) implemented for {type(inp)}")
 
 
@@ -65,7 +70,7 @@ async def on_ready():
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRole):
-        # If user has insufficent perms for that command, tell them so
+        # If user has insufficient perms for that command, tell them so
         await ctx.send('```Missing required role```')
 
 
@@ -74,21 +79,23 @@ async def on_command_error(ctx, error):
 async def ping(ctx):
     await ctx.send(f'```Bot Latency: {round(client.latency * 1000)}ms```')
 
+
 @client.command(hidden=True)
 @commands.has_any_role(*admin)
 async def award(ctx, member: discord.Member, xp: int = 50):
+    """Awards a specified user XP"""
     with open('users.json', 'r') as f:
         users = json.load(f)
 
     message = ctx.message
 
     # I don't know why, but this refuses to work
-    valid = validate(str(xp))
+    valid = validate_number(str(xp))
 
     if valid:
-        await update_data(users, member)
+        leveling.update_data(users, member)
         await add_experience(users, member, xp)
-        await level_up(users, member, message)
+        await check_level(users, member, message)
 
         with open('users.json', 'w') as f:
             json.dump(users, f)
@@ -101,6 +108,7 @@ async def award(ctx, member: discord.Member, xp: int = 50):
 @client.command(hidden=True)
 @commands.has_any_role(*admin)
 async def purge(ctx, amount=2):
+    """Removes messages from a channel"""
     await ctx.channel.purge(limit=amount)
 
 
@@ -134,6 +142,7 @@ async def unban(ctx, *, member):
 
 # Other commands
 
+
 # DuckDuckGo
 @client.command(help="Search the internet with DuckDuckGo")
 async def ddg(ctx, *, search):
@@ -145,7 +154,7 @@ async def ddg(ctx, *, search):
 @client.command(help="Request a link to a page on the Arch Wiki")
 async def arch(ctx, *, page):
     page.replace(" ", "_")
-    url = ArchGet(page)
+    url = arch_wiki_get(page)
     await ctx.send(url)
 
 ####################################################
@@ -155,9 +164,7 @@ async def arch(ctx, *, page):
 
 @client.command(help="Tells you your level")
 async def level(ctx, member: discord.Member=None):
-    # Command to get level
-    with open('users.json', 'r') as f:
-        users = json.load(f)
+    users = leveling.load_users()
     if member:
         user = member
     else:
@@ -175,50 +182,35 @@ async def level(ctx, member: discord.Member=None):
 
 
 @client.event
-async def on_member_join(member):
-    with open('users.json', 'r') as f:
-        users = json.load(f)
-
-    await update_data(users, member)
-
-    with open('users.json', 'w') as f:
-        json.dump(users, f)
+async def on_member_join(member: discord.Member):
+    """Adds new user to leveling system"""
+    users = leveling.load_users()
+    leveling.update_data(users, member)
+    leveling.save_users(users)
 
 
 @client.event
 async def on_message(message):
-    with open('users.json', 'r') as f:
-        users = json.load(f)
+    users = leveling.load_users()
 
-    await update_data(users, message.author)
-    await add_experience(users, message.author, 10)
-    await level_up(users, message.author, message)
+    leveling.update_data(users, message.author)
+    leveling.add_experience(users, message.author, 10)
+    check_level(users, message.author, message)
 
-    with open('users.json', 'w') as f:
-        json.dump(users, f)
+    leveling.save_users(users)
+
     # Execute additional commands
     await client.process_commands(message)
 
 
-async def update_data(users, user):
-    if str(user.id) not in users:
-        users[str(user.id)] = {}
-        users[str(user.id)]['experience'] = 0
-        users[str(user.id)]['level'] = 1
-
-
-async def add_experience(users, user, exp):
-    users[str(user.id)]['experience'] += exp
-
-
-async def level_up(users, user: discord.member.Member, message: discord.Message):
+def check_level(users, user: discord.member.Member, message: discord.Message):
+    """Checks user's level, increases if needed"""
     experience = users[str(user.id)]['experience']
     lvl_start = users[str(user.id)]['level']
     lvl_end = int(experience ** (1/4))
 
     if lvl_end > lvl_start:
         channel = client.get_channel(710264223523012648)
-        # if users[str(user.id)]["level"] != :
         if lvl_end in (5, 10, 15, 20):
             await channel.send(f"Congratulations {user.mention} for reaching level {lvl_end} and gaining perks!")
         else:
@@ -256,7 +248,7 @@ async def xkcd(ctx, number=None):
     """Grabs an XKCD comic, random if no number is supplied"""
     valid = True
     if number:
-        valid = validate(number)
+        valid = validate_number(number)
         if not valid:
             await ctx.send("Please give a valid number")
             return
@@ -267,15 +259,15 @@ async def xkcd(ctx, number=None):
 @client.command(hidden=True)
 @commands.has_any_role(*admin)
 async def set_threshold(ctx: commands.Context, number):
-    valid = validate(number)
+    valid = validate_number(number)
     if not valid:
         await ctx.send("Please give a valid number")
         return
 
-    with open("settings.json", "r") as f:
+    with open("../settings.json", "r") as f:
         current = json.load(f)
     current["hall_of_fame_threshold"] = int(number)
-    with open("settings.json", "w") as f:
+    with open("../settings.json", "w") as f:
         json.dump(current, f)
     await ctx.send("Threshold successfully set (will not affect old messages)")
 
@@ -287,7 +279,7 @@ async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
         if reaction.emoji.name == "linuxPowered":
             message: discord.Message = await guild.get_channel(reaction.channel_id).fetch_message(reaction.message_id)
             num = list(filter(lambda x: x.emoji.name == "linuxPowered", message.reactions))[0].count
-            threshold = json.loads(open("settings.json").read())["hall_of_fame_threshold"]
+            threshold = json.loads(open("../settings.json").read())["hall_of_fame_threshold"]
             if num == threshold:
                 hall_of_fame: discord.TextChannel = guild.get_channel(hall_of_fame_id)
                 messages = await hall_of_fame.history(limit=200).flatten()
@@ -312,7 +304,7 @@ async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
 
                 await update_data(users, message.author)
                 await add_experience(users, message.author, 500)
-                await level_up(users, message.author, message)
+                await check_level(users, message.author, message)
 
                 with open('users.json', 'w') as f:
                     json.dump(users, f)
