@@ -8,6 +8,7 @@ from image import make_image
 from reddit import grab_good_post
 from xkcd import get_url, get_random_url
 from arch import ArchGet
+from valid import validate
 
 # Contains tokens and stuff
 with open("secrets.json") as f:
@@ -82,22 +83,19 @@ async def award(ctx, member: discord.Member, xp: int = 50):
     message = ctx.message
 
     # I don't know why, but this refuses to work
-    valid = False
-    if re.fullmatch("^[0|1|2|3|4|5|6|7|8|9]+$", xp):
-        if 0 < len(xp) < 5:
-            valid = True
-    if not valid:
-        await ctx.send("Please give a valid number")
-        return
+    valid = validate(int(xp))
 
-    await update_data(users, member)
-    await add_experience(users, member, xp)
-    await level_up(users, member, message)
+    if valid:
+        await update_data(users, member)
+        await add_experience(users, member, xp)
+        await level_up(users, member, message)
 
-    with open('users.json', 'w') as f:
-        json.dump(users, f)
+        with open('users.json', 'w') as f:
+            json.dump(users, f)
 
-    await ctx.send(f'```Awarded {xp}xp to {member.name}```')
+        await ctx.send(f'```Awarded {xp}xp to {member.name}```')
+    else:
+        await ctx.send('Please enter a valid number')
 
 
 @client.command(hidden=True)
@@ -144,7 +142,6 @@ async def ddg(ctx, *, search):
 
 
 # Quickly thrown together. Error testing required
-# I hate this. I wish this were dead. Everything about this sucks and is terrible and is broken and AAAAAAAAAAA!!!!
 @client.command(help="Request a link to a page on the Arch Wiki")
 async def arch(ctx, *, page):
     page.replace(" ", "_")
