@@ -83,7 +83,7 @@ async def award(ctx, member: discord.Member, xp: int = 50):
     message = ctx.message
 
     # I don't know why, but this refuses to work
-    valid = validate(int(xp))
+    valid = validate(str(xp))
 
     if valid:
         await update_data(users, member)
