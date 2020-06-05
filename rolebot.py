@@ -56,7 +56,7 @@ def get_guild(inp) -> discord.Guild:
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game('Searching for !help'))
+    await client.change_presence(activity=discord.Game('Searching for sudo help'))
     print('We have logged in as {0.user}'.format(client))
 
 
