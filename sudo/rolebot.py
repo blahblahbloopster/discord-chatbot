@@ -4,7 +4,6 @@ import discord
 import json
 from discord.ext import commands
 import io
-
 from sudo import leveling
 from sudo.image import make_image
 from sudo.reddit import grab_good_post
@@ -13,7 +12,7 @@ from sudo.arch import arch_wiki_get
 from sudo.valid import validate_number
 
 # Contains tokens and stuff
-with open("../secrets.json") as f:
+with open("secrets.json") as f:
     secrets = json.loads(f.read())
 
 
@@ -72,6 +71,8 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRole):
         # If user has insufficient perms for that command, tell them so
         await ctx.send('```Missing required role```')
+    else:
+        print(error, type(error))
 
 
 # Moderation commands.
@@ -84,8 +85,7 @@ async def ping(ctx):
 @commands.has_any_role(*admin)
 async def award(ctx, member: discord.Member, xp: int = 50):
     """Awards a specified user XP"""
-    with open('users.json', 'r') as f:
-        users = json.load(f)
+    users = leveling.load_users()
 
     message = ctx.message
 
@@ -94,11 +94,9 @@ async def award(ctx, member: discord.Member, xp: int = 50):
 
     if valid:
         leveling.update_data(users, member)
-        await add_experience(users, member, xp)
+        leveling.add_experience(users, member, xp)
         await check_level(users, member, message)
-
-        with open('users.json', 'w') as f:
-            json.dump(users, f)
+        leveling.save_users(users)
 
         await ctx.send(f'```Awarded {xp}xp to {member.name}```')
     else:
@@ -171,10 +169,8 @@ async def level(ctx, member: discord.Member=None):
         user = ctx.message.author
     level = users[str(user.id)]["level"]
     xp = users[str(user.id)]["experience"]
-
     end_xp = (level + 1) ** 4
     start_xp = level ** 4
-
     img = make_image(user, level, xp, start_xp, end_xp)
     file = io.BytesIO()
     img.save(file, "PNG")
@@ -195,7 +191,7 @@ async def on_message(message):
 
     leveling.update_data(users, message.author)
     leveling.add_experience(users, message.author, 10)
-    check_level(users, message.author, message)
+    await check_level(users, message.author, message)
 
     leveling.save_users(users)
 
@@ -203,7 +199,7 @@ async def on_message(message):
     await client.process_commands(message)
 
 
-def check_level(users, user: discord.member.Member, message: discord.Message):
+async def check_level(users, user: discord.member.Member, message: discord.Message):
     """Checks user's level, increases if needed"""
     experience = users[str(user.id)]['experience']
     lvl_start = users[str(user.id)]['level']
@@ -264,10 +260,10 @@ async def set_threshold(ctx: commands.Context, number):
         await ctx.send("Please give a valid number")
         return
 
-    with open("../settings.json", "r") as f:
+    with open("settings.json", "r") as f:
         current = json.load(f)
     current["hall_of_fame_threshold"] = int(number)
-    with open("../settings.json", "w") as f:
+    with open("settings.json", "w") as f:
         json.dump(current, f)
     await ctx.send("Threshold successfully set (will not affect old messages)")
 
@@ -279,7 +275,7 @@ async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
         if reaction.emoji.name == "linuxPowered":
             message: discord.Message = await guild.get_channel(reaction.channel_id).fetch_message(reaction.message_id)
             num = list(filter(lambda x: x.emoji.name == "linuxPowered", message.reactions))[0].count
-            threshold = json.loads(open("../settings.json").read())["hall_of_fame_threshold"]
+            threshold = json.loads(open("settings.json").read())["hall_of_fame_threshold"]
             if num == threshold:
                 hall_of_fame: discord.TextChannel = guild.get_channel(hall_of_fame_id)
                 messages = await hall_of_fame.history(limit=200).flatten()
@@ -299,15 +295,13 @@ async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
                     embed.set_image(url=eligible_files[0].url)
                 await hall_of_fame.send(f"`{message.author}` | `{message.created_at.strftime('%c')}` | `{message.id}`\n"
                                         f"{content}", embed=embed)
-                with open('users.json', 'r') as f:
-                    users = json.load(f)
+                users = leveling.load_users()
 
-                await update_data(users, message.author)
-                await add_experience(users, message.author, 500)
+                leveling.update_data(users, message.author)
+                leveling.add_experience(users, message.author, 500)
                 await check_level(users, message.author, message)
 
-                with open('users.json', 'w') as f:
-                    json.dump(users, f)
+                leveling.save_users(users)
 
     readme: discord.TextChannel = guild.get_channel(readme_channel_id)
     readme_message: discord.Message = await readme.fetch_message(readme_post_id)

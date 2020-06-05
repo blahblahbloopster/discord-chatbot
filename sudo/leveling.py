@@ -4,14 +4,14 @@ import discord
 
 def load_users():
     """Loads users dict"""
-    with open("users.json", "r") as f:
+    with open("sudo/users.json", "r") as f:
         users = json.load(f)
     return users
 
 
 def save_users(data: dict):
     """Saves users dict"""
-    with open('users.json', 'w') as f:
+    with open('sudo/users.json', 'w') as f:
         json.dump(data, f)
 
 
