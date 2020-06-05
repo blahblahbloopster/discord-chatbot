@@ -15,7 +15,7 @@ with open("secrets.json") as f:
     secrets = json.loads(f.read())
 
 
-admin = (709561120070959205, )
+admin = (709561120070959205, )  # Roles with admin perms
 client = commands.Bot(command_prefix='sudo ')
 
 role1 = 709873263525757060
