@@ -55,7 +55,7 @@ hall_of_fame_id = 716131138468446348
 
 
 def get_guild(inp) -> discord.Guild:
-    """Utility function, gets a Guild object from a variety of different types"""
+    # Utility function, gets a Guild object from a variety of different types
     if type(inp) in (commands.Context, discord.message.Message):
         return inp.guild
     if type(inp) in (discord.RawReactionActionEvent,):  # More to be added!
@@ -72,6 +72,7 @@ async def on_ready():
 
 
 # Errors
+# TODO: Add more error messages to increase ease of use and help with debuging
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRole):
