@@ -95,8 +95,9 @@ async def award(ctx, member: discord.Member, xp: int = 50):
 
     message = ctx.message
 
-    # I don't know why, but this refuses to work
-    valid = validate_number(str(xp))
+    # Validate xp passed
+    if xp != 50:
+        valid = validate_number(str(xp))
 
     if valid:
         leveling.update_data(users, member)
@@ -148,13 +149,15 @@ async def unban(ctx, *, member):
 
 
 # DuckDuckGo
+# In order to move to embeds you're going to have to write some complex code. Better to make a script.
 @client.command(help="Search the internet with DuckDuckGo")
 async def ddg(ctx, *, search):
     search = duckduckgo.get_zci(search)
     await ctx.send(f'```{search}```')
 
 
-# Quickly thrown together. Error testing required
+# Quickly thrown together. Poor handling of links. Move to embeds add search functionality and grab head summary at top of wiki page.
+# TOP PRIORITY!!!
 @client.command(help="Request a link to a page on the Arch Wiki")
 async def arch(ctx, *, page):
     page.replace(" ", "_")
@@ -212,7 +215,8 @@ async def check_level(users, user: discord.member.Member, message: discord.Messa
     lvl_end = int(experience ** (1/4))
 
     if lvl_end > lvl_start:
-        channel = client.get_channel(710264223523012648)
+        LEVELUP_CHANNEL = 710264223523012648 # Channel to post level up messages to
+        channel = client.get_channel(LEVELUP_CHANNEL)
         if lvl_end in (5, 10, 15, 20):
             await channel.send(f"Congratulations {user.mention} for reaching level {lvl_end} and gaining perks!")
         else:
@@ -237,7 +241,7 @@ async def check_level(users, user: discord.member.Member, message: discord.Messa
 
 @client.command(help="Grabs a random image/video from the specified subreddit")
 async def reddit(ctx, subreddit):
-    """Grabs one of the top media-containing posts from the specified subreddit"""
+    # Grabs one of the top media-containing posts from the specified subreddit
     post = grab_good_post(subreddit)
     if post is None:
         await ctx.send("No media posts were found in the top 20 :(")
@@ -247,7 +251,7 @@ async def reddit(ctx, subreddit):
 
 @client.command(help="Grabs an XKCD comic, random if no number is supplied")
 async def xkcd(ctx, number=None):
-    """Grabs an XKCD comic, random if no number is supplied"""
+    # Grabs an XKCD comic, random if no number is supplied
     valid = True
     if number:
         valid = validate_number(number)
@@ -314,7 +318,7 @@ async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
     if not reaction.message_id == roles_post_id:
         reactions = readme_message.reactions
         for i in reactions:
-            if i.emoji == "✅":  # There IS a char there, but my IDE doesn't display it.
+            if i.emoji == "✅":  # Evil hacker's IDE is sad and can't display the character clearly seen here
                 if len(reaction.member.roles) < 2:
                     await reaction.member.add_roles(discord.utils.get(guild.roles, id=starter_role_id))
             else:
@@ -330,7 +334,7 @@ async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
     reactions = readme_message.reactions
     check_box = None
     for i in reactions:
-        if i.emoji == "✅":  # There IS a char there, but my IDE doesn't display it.  It's
+        if i.emoji == "✅":  # Evil hacker's IDE is sad and can't display the character clearly seen here
             check_box = i
     if not check_box:
         return
