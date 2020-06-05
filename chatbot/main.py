@@ -4,7 +4,7 @@ import discord
 from chatbot import chatbot
 import json
 
-secrets = json.loads(open("../secrets.json").read())
+secrets = json.loads(open("secrets.json").read())
 
 client = discord.Client()
 

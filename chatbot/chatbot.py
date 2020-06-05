@@ -79,7 +79,7 @@ import re
 # with open("movie_lines3.txt", "wt") as f:
 #     f.write("\n".join(lines))
 
-brain = brain.Brain("cobe_movie_2.brain")
+brain = brain.Brain("chatbot/cobe_movie_2.brain")
 
 # for i in lines:
 #     brain.learn(i)
