@@ -4,6 +4,12 @@ import discord
 import json
 from discord.ext import commands
 import io
+import os
+
+print(os.path.abspath("."))
+if os.path.abspath(".").split("/")[-1] != "discord_bot":
+    os.chdir("../")
+
 from sudo import leveling
 from sudo.image import make_image
 from sudo.reddit import grab_good_post

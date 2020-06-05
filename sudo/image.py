@@ -2,6 +2,10 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 import discord
+import os
+
+if os.path.abspath(".").split("/")[-1] != "discord_bot":
+    os.chdir("../")
 
 
 def draw(percentage, color=(255, 0, 0)):

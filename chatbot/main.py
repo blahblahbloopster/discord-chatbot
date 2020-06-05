@@ -1,8 +1,12 @@
 import time
-
 import discord
 from chatbot import chatbot
 import json
+import os
+
+if os.path.abspath(".").split("/")[-1] != "discord_bot":
+    os.chdir("../")
+
 
 secrets = json.loads(open("secrets.json").read())
 

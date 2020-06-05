@@ -1,5 +1,9 @@
 import json
 import discord
+import os
+
+if os.path.abspath(".").split("/")[-1] != "discord_bot":
+    os.chdir("../")
 
 
 def load_users():

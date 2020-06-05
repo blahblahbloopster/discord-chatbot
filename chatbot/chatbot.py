@@ -1,7 +1,8 @@
-# import cobe
 from cobe import brain
-import string
-import re
+import os
+
+if os.path.abspath(".").split("/")[-1] != "discord_bot":
+    os.chdir("../")
 #
 # with open("spaceballs.txt") as f:
 #     lines = f.read().splitlines()
